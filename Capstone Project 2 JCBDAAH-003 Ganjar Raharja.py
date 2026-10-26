@@ -1,12 +1,12 @@
 import json
 import os
+from datetime import datetime
 
 def input_tanggal(prompt):
     while True:
         tanggal = input(prompt)
         try:
-            datetime.strptime(tanggal, "%Y-%m-%d")
-            return tanggal
+            return datetime.strptime(tanggal, "%Y-%m-%d").strftime("%Y-%m-%d")
         except ValueError:
             print("❌ Format tanggal harus YYYY-MM-DD (contoh: 2025-08-27).")
 
@@ -23,7 +23,6 @@ def input_angka(prompt, minimal=None, maksimal=None):
             continue
         return nilai
         
-from datetime import datetime
 # ================================
 # File Penyimpanan
 # ================================
@@ -290,7 +289,7 @@ def lihat_kunjungan_by_poli():
         print("❌ Tidak ada kunjungan untuk poliklinik tersebut.")
 
 def lihat_kunjungan_by_tanggal():
-    tanggal = input("Masukkan tanggal kunjungan (YYYY-MM-DD): ")
+    tanggal = input_tanggal("Masukkan tanggal kunjungan (YYYY-MM-DD): ")
     found = False
     for k in kunjungan:
         if k[2] == tanggal:
@@ -369,8 +368,8 @@ def ubah_kunjungan():
                 print("3. Dokter")
                 print("0. Selesai")
                 pilih = input("Pilih: ")
-                if pilih == "1":
-                    tanggal_baru = input(f"Tanggal baru ({tanggal}): ")
+                   if pilih == "1":
+                      tanggal = input_tanggal(f"Tanggal baru (sekarang {tanggal}): ")
                     if tanggal_baru: tanggal = tanggal_baru
                 elif pilih == "2":
                     print("\n=== Pilih Poli ===")
