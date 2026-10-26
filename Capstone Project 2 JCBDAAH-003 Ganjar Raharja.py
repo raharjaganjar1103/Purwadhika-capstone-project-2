@@ -1,6 +1,29 @@
 import json
 import os
 
+def input_tanggal(prompt):
+    while True:
+        tanggal = input(prompt)
+        try:
+            datetime.strptime(tanggal, "%Y-%m-%d")
+            return tanggal
+        except ValueError:
+            print("❌ Format tanggal harus YYYY-MM-DD (contoh: 2025-08-27).")
+
+def input_angka(prompt, minimal=None, maksimal=None):
+    while True:
+        nilai = input(prompt)
+        if not nilai.isdigit():
+            print("❌ Masukkan angka yang valid.")
+            continue
+        nilai = int(nilai)
+        if (minimal is not None and nilai < minimal) or \
+           (maksimal is not None and nilai > maksimal):
+            print(f"❌ Pilihan harus antara {minimal} dan {maksimal}.")
+            continue
+        return nilai
+        
+from datetime import datetime
 # ================================
 # File Penyimpanan
 # ================================
@@ -9,7 +32,6 @@ FILE_DATA = "data_pasien.json"
 # ================================
 # Data Awal (Default)
 # ================================
-
 def format_id_pasien(num):
     return f"PSN{num:04d}"
 
@@ -87,10 +109,14 @@ def tambah_pasien():
             print(f"Pasien dengan No KTP {noktp} sudah terdaftar atas nama {p[1]}!")
             return
         break
-    umur = int(input("Umur: "))
+    umur = input_angka("Umur: ", 0, 120))
     alamat = input("Alamat: ")
-    jk = input("Jenis Kelamin (L/P): ").upper()
-    jk = "Laki-laki" if jk == "L" else "Perempuan"
+    while True:
+        jk = input("Jenis Kelamin (L/P): ").upper()
+        if jk in ("L", "P"):
+            jk = "Laki-laki" if jk == "L" else "Perempuan"
+            break
+        print("❌ Masukkan L atau P.")
     pasien.append((idbaru, nama, noktp, umur, alamat, jk))
     save_data()
     print("✅ Pasien berhasil ditambahkan.")
@@ -124,6 +150,7 @@ def ubah_pasien():
                 print("2. No KTP")
                 print("3. Umur")
                 print("4. Alamat")
+                print("5. Jenis Kelamin")
                 print("0. Selesai")
                 pilih = input("Pilih bagian data yang ingin diubah: ")
                 if pilih == "1":
@@ -149,6 +176,12 @@ def ubah_pasien():
                 elif pilih == "4":
                     alamat_baru = input(f"Alamat baru ({alamat}): ")
                     if alamat_baru: alamat = alamat_baru
+                elif pilih == "5":            # <-- blok baru mulai dari sini
+                    jk_baru = input(f"Jenis kelamin baru L/P ({jk}): ").upper()
+                    if jk_baru in ("L", "P"):
+                        jk = "Laki-laki" if jk_baru == "L" else "Perempuan"
+                    elif jk_baru:
+                        print("❌ Masukkan L atau P.")
                 elif pilih == "0":
                     break
                 else:
@@ -190,17 +223,20 @@ def hapus_pasien():
 def tambah_kunjungan():
     global kunjungan
     lihat_pasien()
-    idbaru = len(kunjungan) + 1
+    idbaru = max((k[0] for k in kunjungan), default=0) + 1
     idpasien = input("Masukkan ID pasien (format: PSNxxxx): ").upper()
-    tanggal = input("Tanggal kunjungan (YYYY-MM-DD): ")
+    if not any(p[0] == idpasien for p in pasien):
+        print("❌ ID pasien tidak ditemukan.")
+        return
+    tanggal = input_tanggal("Tanggal kunjungan (YYYY-MM-DD): ")
     print("\n=== Pilih Poli ===")
     for idpoli, namapoli in daftar_poli:
         print(f"{idpoli}. {namapoli}")
-    poli = int(input("Pilih ID Poli: "))
+    poli = input_angka("Pilih ID Poli: ", 1, len(daftar_poli))
     print("\n=== Pilih Dokter ===")
     for idx, dokter in enumerate(daftar_dokter[poli], 1):
         print(f"{idx}. {dokter}")
-    dokter_idx = int(input("Pilih nomor dokter: "))
+    dokter_idx = input_angka("Pilih nomor dokter: ", 1, len(daftar_dokter[poli]))
     dokter_nama = daftar_dokter[poli][dokter_idx-1]
     kunjungan.append((idbaru, idpasien, tanggal, poli, dokter_nama))
     save_data()
@@ -238,7 +274,7 @@ def lihat_kunjungan_by_poli():
     print("\n=== Pilih Poli ===")
     for idpoli, namapoli in daftar_poli:
         print(f"{idpoli}. {namapoli}")
-    poli = int(input("Pilih ID Poli: "))
+    poli = input_angka("Pilih ID Poli: ", 1, len(daftar_poli))
     found = False
     for k in kunjungan:
         if k[3] == poli:
@@ -322,7 +358,7 @@ def lihat_data():
 def ubah_kunjungan():
     global kunjungan
     lihat_kunjungan()
-    idk = int(input("Masukkan ID kunjungan yang ingin diubah: "))
+    idk = input_angka("Masukkan ID kunjungan yang ingin diubah: ")
     for i, k in enumerate(kunjungan):
         if k[0] == idk:
             tanggal, poli, dokter_nama = k[2], k[3], k[4]
@@ -340,17 +376,17 @@ def ubah_kunjungan():
                     print("\n=== Pilih Poli ===")
                     for idpoli, namapoli in daftar_poli:
                         print(f"{idpoli}. {namapoli}")
-                    poli = int(input("Pilih ID Poli: "))
+                    poli = input_angka("Pilih ID Poli: ", 1, len(daftar_poli))
                     print("\n=== Pilih Dokter ===")
                     for idx, dokter in enumerate(daftar_dokter[poli], 1):
                         print(f"{idx}. {dokter}")
-                    dokter_idx = int(input("Pilih nomor dokter: "))
+                    dokter_idx = input_angka("Pilih nomor dokter: ", 1, len(daftar_dokter[poli]))
                     dokter_nama = daftar_dokter[poli][dokter_idx-1]
                 elif pilih == "3":
                     print("\n=== Pilih Dokter ===")
                     for idx, dokter in enumerate(daftar_dokter[poli], 1):
                         print(f"{idx}. {dokter}")
-                    dokter_idx = int(input("Pilih nomor dokter: "))
+                    dokter_idx = input_angka("Pilih nomor dokter: ", 1, len(daftar_dokter[poli]))
                     dokter_nama = daftar_dokter[poli][dokter_idx-1]
                 elif pilih == "0":
                     break
@@ -370,7 +406,7 @@ def ubah_kunjungan():
 def hapus_kunjungan():
     global kunjungan
     lihat_kunjungan()
-    idk = int(input("Masukkan ID kunjungan yang ingin dihapus: "))
+    idk = input_angka("Masukkan ID kunjungan yang ingin dihapus: ")
     for k in kunjungan:
         if k[0] == idk:
             konfirmasi = input(f"⚠️ Yakin ingin hapus kunjungan ID {idk}? (y/n): ").lower()
