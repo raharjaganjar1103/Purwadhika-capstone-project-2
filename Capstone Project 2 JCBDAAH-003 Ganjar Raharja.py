@@ -109,7 +109,7 @@ def tambah_pasien():
             print(f"Pasien dengan No KTP {noktp} sudah terdaftar atas nama {p[1]}!")
             return
         break
-    umur = input_angka("Umur: ", 0, 120))
+    umur = input_angka("Umur: ", 0, 120)
     alamat = input("Alamat: ")
     while True:
         jk = input("Jenis Kelamin (L/P): ").upper()
