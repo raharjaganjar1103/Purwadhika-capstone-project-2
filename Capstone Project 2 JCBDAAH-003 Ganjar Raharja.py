@@ -175,7 +175,7 @@ def ubah_pasien():
                 elif pilih == "4":
                     alamat_baru = input(f"Alamat baru ({alamat}): ")
                     if alamat_baru: alamat = alamat_baru
-                elif pilih == "5":            # <-- blok baru mulai dari sini
+                elif pilih == "5":
                     jk_baru = input(f"Jenis kelamin baru L/P ({jk}): ").upper()
                     if jk_baru in ("L", "P"):
                         jk = "Laki-laki" if jk_baru == "L" else "Perempuan"
@@ -368,7 +368,7 @@ def ubah_kunjungan():
                 print("3. Dokter")
                 print("0. Selesai")
                 pilih = input("Pilih: ")
-                   if pilih == "1":
+                    if pilih == "1":
                       tanggal = input_tanggal(f"Tanggal baru (sekarang {tanggal}): ")
                     if tanggal_baru: tanggal = tanggal_baru
                 elif pilih == "2":
