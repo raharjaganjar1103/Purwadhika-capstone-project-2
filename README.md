@@ -14,11 +14,15 @@ The application lets clinic staff register patients, schedule visits by clinic a
 - Automatic patient IDs in the format `PSN0001`, `PSN0002`, ...
 - National ID (No. KTP) validation: exactly 16 digits, numbers only
 - Duplicate protection: a National ID cannot be registered twice, both when adding and when editing a patient
-- Update a single field (name, National ID, age, or address) with a confirmation step before saving
+- Update a single field (name, National ID, age, address, or gender) with a confirmation step before saving
+- Age is limited to 0-120 and gender must be entered as L or P
 - Search a patient by ID
 
 **Visit scheduling**
 - Create visit schedules by choosing a patient, date, clinic, and doctor
+- The patient ID must exist, and dates are validated and normalized to `YYYY-MM-DD` when scheduling, editing, and searching visits (for example, `2025-8-27` becomes `2025-08-27`)
+- Visit IDs are based on the highest existing ID, so they never repeat after a visit is deleted
+- Clinic and doctor choices are range-checked, and numeric inputs are validated so the program does not crash on invalid entries
 - 5 clinics (General, Dental, Pediatrics, Cardiology, Neurology), each with 2 doctors
 - View all visits, or search by visit ID, clinic, or date
 - Update the date, clinic, or doctor of an existing visit, with confirmation
@@ -90,12 +94,10 @@ Data is stored in `data_pasien.json` with two lists.
 
 To reset the application to its sample data, delete `data_pasien.json` and run the program again.
 
-## Known Limitations and Planned Improvements
+## Future Improvements
 
-- Visit IDs are generated from the number of existing visits, so an ID could repeat after a visit is deleted. Using the highest existing ID plus one (as done for patient IDs) would fix this.
-- Visit creation does not yet check that the patient ID exists or that the date follows the `YYYY-MM-DD` format.
-- Numeric inputs (age, clinic, doctor choice, visit ID) are not fully protected against non-numeric entries.
-- Gender cannot be edited after a patient is registered.
+- Replace JSON file storage with a SQL database
+- Add a time slot to each visit
 
 ## Author
 
