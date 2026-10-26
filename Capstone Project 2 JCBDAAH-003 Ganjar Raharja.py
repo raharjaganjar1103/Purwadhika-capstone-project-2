@@ -368,9 +368,8 @@ def ubah_kunjungan():
                 print("3. Dokter")
                 print("0. Selesai")
                 pilih = input("Pilih: ")
-                    if pilih == "1":
-                      tanggal = input_tanggal(f"Tanggal baru (sekarang {tanggal}): ")
-                    if tanggal_baru: tanggal = tanggal_baru
+                if pilih == "1":
+                    tanggal = input_tanggal(f"Tanggal baru (sekarang {tanggal}): ")
                 elif pilih == "2":
                     print("\n=== Pilih Poli ===")
                     for idpoli, namapoli in daftar_poli:
